@@ -25,6 +25,7 @@ reentrancies_pred = []
 reentrancies_gold = []
 srl_pred = []
 srl_gold = []
+unlabelled_pred, unlabelled_gold = [], []
 
 dict_pred, dict_gold = None, None
 
@@ -51,10 +52,8 @@ roles = ['ARG0', 'ARG1', 'ARG2', 'ARG3', 'ARG4', 'ARG5', 'ARG6',
     'prep-without',
     'conj-as-if']
 
-def evaluate(name, list_pred, list_gold):
-    inters[name] += len(set(list_pred) & set(list_gold))
-    preds[name] += len(set(list_pred))
-    golds[name] += len(set(list_gold))
+def pretty_print(score, i, p, g, pr, rc, f):
+    print(f'{score:>20} {i:>10} {p:>10} {g:>10} {pr:.2f} {rc:.2f} {f:.2f}')
 
 count = len(pred)
 progress = 0
@@ -82,26 +81,7 @@ for amr_pred, amr_gold in zip(pred, gold):
         else:
             triples_gold.append((t[0], t[1], t[2]))
     
-    for i in roles:
-        evaluate(i, disambig(role(i, dict_pred, triples_pred)),
-            disambig(role(i, dict_gold, triples_gold)))
-        # if i == 'op1':
-        #     print(i)
-        #     print(disambig(role(i, dict_gold, triples_gold)), disambig(role(i, dict_gold, triples_gold)))
-        #     input()
-    
-    evaluate('Concepts', disambig(concepts(dict_pred)),
-        disambig(concepts(dict_gold)))
-    evaluate('Named Ent.', disambig(namedent(dict_pred, triples_pred)),
-        disambig(namedent(dict_gold, triples_gold)))
-    evaluate('Negations', disambig(negations(dict_pred, triples_pred)),
-        disambig(negations(dict_gold, triples_gold)))
-    evaluate('Wikification', disambig(wikification(triples_pred)),
-        disambig(wikification(triples_gold)))
-    evaluate('Constants', disambig(constants(dict_pred, triples_pred)),
-        disambig(constants(dict_gold, triples_gold)))
-    evaluate('Quantities', disambig(quantities(dict_pred, triples_pred)),
-        disambig(quantities(dict_gold, triples_gold)))
+    preds, golds, inters = evaluate2((dict_pred, dict_gold), (triples_pred, triples_gold), (preds, golds, inters))
 
     reentrancies_pred.append(reentrancies(dict_pred, triples_pred))
     reentrancies_gold.append(reentrancies(dict_gold, triples_gold))
@@ -109,22 +89,32 @@ for amr_pred, amr_gold in zip(pred, gold):
     srl_pred.append(srl(dict_pred, triples_pred))
     srl_gold.append(srl(dict_gold, triples_gold))
 
+    unlabelled_pred.append(unlabelled(dict_pred, triples_pred))
+    unlabelled_gold.append(unlabelled(dict_gold, triples_gold))
+
+pr, rc, f = defaultdict(float), defaultdict(float), defaultdict(float)
 for score in preds:
     if preds[score] > 0:
-        pr = inters[score] / preds[score]
+        pr[score] = inters[score] / preds[score]
     else:
-        pr = 0
+        pr[score] = 0
     if golds[score] > 0:
-        rc = inters[score] / golds[score]
+        rc[score] = inters[score] / golds[score]
     else:
-        rc = 0
-    if pr + rc > 0:
-        f = 2 * (pr * rc) / (pr + rc)
-        print(f'{score:>20} {inters[score]:>10} {preds[score]:>10} {golds[score]:>10} -> P: {pr:.2f}, R: {rc:.2f}, F: {f:.2f}')
+        rc[score] = 0
+    if pr[score] + rc[score] > 0:
+        f[score] = 2 * (pr[score] * rc[score]) / (pr[score] + rc[score])
     else: 
-        print(f'{score:>20} {inters[score]:>10} {preds[score]:>10} {golds[score]:>10} -> P: {pr:.2f}, R: {rc:.2f}, F: 0.00')
+        f[score] = 0
+
+for score in sorted(preds, key = lambda key: f[key]):
+    pretty_print(score, inters[score], preds[score], golds[score], pr[score], rc[score], f[score])
 
 pr, rc, f = smatch.main(reentrancies_pred, reentrancies_gold, True)
-print(f'Reentrancies -> P: {pr:.2f}, R: {rc:.2f}, F: {f:.2f}')
+pretty_print('Reentrancies', '?', '?', '?', pr, rc, f)
+
 pr, rc, f = smatch.main(srl_pred, srl_gold, True)
-print(f'SRL -> P: {pr:.2f}, R: {rc:.2f}, F: {f:.2f}')
+pretty_print('SRL', '?', '?', '?', pr, rc, f)
+
+pr, rc, f = smatch.main(unlabelled_pred, unlabelled_gold, True)
+pretty_print('Unlabelled', '?', '?', '?', pr, rc, f)

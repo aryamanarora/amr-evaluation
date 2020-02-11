@@ -762,7 +762,10 @@ def score_amr_pairs(f1, f2, justinstance=False, justattribute=False, justrelatio
     # matching triple number, triple number in test file, triple number in gold file
     total_match_num = total_test_num = total_gold_num = 0
     # Read amr pairs from two files
+    # tot = len(f1)
     for sent_num, (cur_amr1, cur_amr2) in enumerate(generate_amr_lines(f1, f2), start=1):
+        # if sent_num % 100 == 0:
+        #     print(sent_num, '/', tot)
         best_match_num, test_triple_num, gold_triple_num = get_amr_match(cur_amr1, cur_amr2,
                                                                          sent_num=sent_num,  # sentence number
                                                                          justinstance=justinstance,
