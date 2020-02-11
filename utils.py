@@ -20,19 +20,51 @@ def concepts(v2c_dict):
     return [str(v) for v in v2c_dict.values()]
 
 def namedent(v2c_dict, triples):
-    return [str(v2c_dict[v1]) for (l,v1,v2) in triples if l == "name"]
+    return [str(v2c_dict[v1]) for (l, v1, v2) in triples if l == "name"]
 
 def negations(v2c_dict, triples):
-    return [v2c_dict[v1] for (l,v1,v2) in triples if l == "polarity"]    
+    return [v2c_dict[v1] for (l, v1, v2) in triples if l == "polarity"]
+
+def role(role, v2c_dict, triples):
+    ret = []
+    for (l, v1, v2) in triples:
+        if l == role:
+            c1 = v2c_dict[v1] if v1 in v2c_dict else v1
+            c2 = v2c_dict[v2] if v2 in v2c_dict else v2
+            ret.append(c1 + ' ' + c2)
+        elif l == role + '-of':
+            c1 = v2c_dict[v1] if v1 in v2c_dict else v1
+            c2 = v2c_dict[v2] if v2 in v2c_dict else v2
+            ret.append(c2 + ' ' + c1)
+    return ret
+
+def constants(v2c_dict, triples):
+    ret = []
+    for (l, v1, v2) in triples:
+        if v2[-1] == '_':
+            c1 = v2c_dict[v1] if v1 in v2c_dict else v1
+            c2 = v2c_dict[v2] if v2 in v2c_dict else v2
+            ret.append(l + ' ' + c1 + ' ' + c2)
+    return ret
+
+def quantities(v2c_dict, triples):
+    ret = []
+    for (l, v1, v2) in triples:
+        c1 = v2c_dict[v1] if v1 in v2c_dict else v1
+        c2 = v2c_dict[v2] if v2 in v2c_dict else v2
+        if c1[-8:] == 'quantity':
+            ret.append(l + ' ' + c1 + ' ' + c2)
+    return ret
+
 
 def wikification(triples):
-    return [v2 for (l,v1,v2) in triples if l == "wiki"]
+    return [v2 for (l, v1, v2) in triples if l == "wiki"]
 
 def reentrancies(v2c_dict, triples):
     lst = []
     vrs = []
     for n in v2c_dict.keys():
-        parents = [(l,v1,v2) for (l,v1,v2) in triples if v2 == n and l != "instance"]
+        parents = [(l, v1, v2) for (l, v1, v2) in triples if v2 == n and l != "instance"]
         if len(parents) > 1:
             #extract triples involving this (multi-parent) node
             for t in parents:
@@ -69,6 +101,9 @@ def srl(v2c_dict, triples):
 
 def var2concept(amr):
     v2c = {}
-    for n, v in zip(amr.nodes, amr.node_values):
-        v2c[n] = v
+    try:
+        for n, v in zip(amr.nodes, amr.node_values):
+            v2c[n] = v
+    except:
+        pass
     return v2c
