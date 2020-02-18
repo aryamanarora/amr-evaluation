@@ -53,7 +53,7 @@ roles = ['ARG0', 'ARG1', 'ARG2', 'ARG3', 'ARG4', 'ARG5', 'ARG6',
     'conj-as-if']
 
 def pretty_print(score, i, p, g, pr, rc, f):
-    print(f'{score:>20} {i:>10} {p:>10} {g:>10} {pr:.2f} {rc:.2f} {f:.2f}')
+    print(f'{score:>50} {i:>10} {p:>10} {g:>10} {pr:.2f} {rc:.2f} {f:.2f}')
 
 count = len(pred)
 progress = 0

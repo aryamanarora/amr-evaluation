@@ -53,26 +53,35 @@ def evaluate2(v2c_dicts, tripleses, rels):
             # per-role
             if l in roles:
                 comps[i][l].append(c1 + ' ' + c2)
-            elif l[:-3] in roles and l[-3:] == '-of':
+            elif l[:-3] in roles and l.endswith('-of'):
                 comps[i][l].append(c2 + ' ' + c1)
             
             # constants
-            if v2[-1] == '_':
+            if v2.endswith('_'):
                 comps[i]['Constants'].append(l + ' ' + c1 + ' ' + c2)
             
             # quantitites
-            if c1[-8:] == 'quantity':
+            if c1.endswith('quantity'):
                 comps[i]['Quantities'].append(l + ' ' + c1 + ' ' + c2)
+                comps[i]['Quantities (ignoring kind)'].append(c1 + ' ' + c2)
 
             # reification
-            if c2[-2:] == '91':
+            if c2.endswith('91'):
                 comps[i]['Reification'].append(l + ' ' + c1 + ' ' + c2)
             # predicate (numbered concept)
             elif c1[-2:].isdigit():
                 comps[i]['Predicates'].append(c1)
             
+            # ops
+            if l.startswith('op'):
+                comps[i]['Ops (ignoring order)'].append(c1 + ' ' + c2)
+            
+            # relations
+            comps[i]['Relations (ignoring nodes)'].append(l)
+            
+            
     
-    for key in comps[0]:
+    for key in set(comps[0]) | set(comps[1]):
         rels[2][key] += len(set(comps[0][key]) & set(comps[1][key]))
         rels[0][key] += len(set(comps[0][key]))
         rels[1][key] += len(set(comps[1][key]))
