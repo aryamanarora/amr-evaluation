@@ -18,6 +18,10 @@ from utils import *
 pred = open(sys.argv[1]).read().strip().split('\n\n')
 gold = open(sys.argv[2]).read().strip().split('\n\n')
 
+concepts_pred = defaultdict(int)
+concepts_gold = defaultdict(int)
+concepts_inters = defaultdict(int)
+
 inters = defaultdict(int)
 golds = defaultdict(int)
 preds = defaultdict(int)
@@ -52,8 +56,34 @@ roles = ['ARG0', 'ARG1', 'ARG2', 'ARG3', 'ARG4', 'ARG5', 'ARG6',
     'prep-without',
     'conj-as-if']
 
-def pretty_print(score, i, p, g, pr, rc, f):
-    print(f'{score:>50} {i:>10} {p:>10} {g:>10} {pr:.2f} {rc:.2f} {f:.2f}')
+def get_scores(inter, pred, gold):
+    pr, rc, f = 0.0, 0.0, 0.0
+    if pred > 0:
+        pr = inter / pred
+    else:
+        pr = 0
+    if gold > 0:
+        rc = inter / gold
+    else:
+        rc = 0
+    if pr + rc > 0:
+        f = 2 * (pr * rc) / (pr + rc)
+    else: 
+        f = 0
+    return (pr, rc, f)
+
+def pretty_print(score, i, p, g):
+    pr, rc, f = get_scores(i, p, g)
+    with open('out.html', 'a') as fout:
+        fout.write(f"""<tr>
+            <th scope="row">{score}</th>
+            <td>{i}</td>
+            <td>{p}</td>
+            <td>{g}</td>
+            <td>{pr}</td>
+            <td>{rc}</td>
+            <td>{f}</td>
+        </tr>""")
 
 count = len(pred)
 progress = 0
@@ -83,6 +113,18 @@ for amr_pred, amr_gold in zip(pred, gold):
     
     preds, golds, inters = evaluate2((dict_pred, dict_gold), (triples_pred, triples_gold), (preds, golds, inters))
 
+    conc_pred = disambig(concepts(dict_pred))
+    conc_gold = disambig(concepts(dict_gold))
+    for concept in conc_pred:
+        concepts_inters[concept[:-2]] += 0
+        if concept in conc_gold:
+            concepts_inters[concept[:-2]] += 1
+        concepts_pred[concept[:-2]] += 1
+    for concept in conc_gold:
+        concepts_inters[concept[:-2]] += 0
+        concepts_gold[concept[:-2]] += 1
+    
+
     reentrancies_pred.append(reentrancies(dict_pred, triples_pred))
     reentrancies_gold.append(reentrancies(dict_gold, triples_gold))
     
@@ -92,29 +134,55 @@ for amr_pred, amr_gold in zip(pred, gold):
     unlabelled_pred.append(unlabelled(dict_pred, triples_pred))
     unlabelled_gold.append(unlabelled(dict_gold, triples_gold))
 
-pr, rc, f = defaultdict(float), defaultdict(float), defaultdict(float)
-for score in preds:
-    if preds[score] > 0:
-        pr[score] = inters[score] / preds[score]
-    else:
-        pr[score] = 0
-    if golds[score] > 0:
-        rc[score] = inters[score] / golds[score]
-    else:
-        rc[score] = 0
-    if pr[score] + rc[score] > 0:
-        f[score] = 2 * (pr[score] * rc[score]) / (pr[score] + rc[score])
-    else: 
-        f[score] = 0
+with open('out.html', 'w') as fout:
+    fout.write("""<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Results</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    </head>
+    <body>
+        <table class="table">
+            <tr>
+                <th scope="col">Metric</th>
+                <th scope="col">Intersection</th>
+                <th scope="col">Pred</th>
+                <th scope="col">Gold</th>
+                <th scope="col">Precision</th>
+                <th scope="col">Recall</th>
+                <th scope="col">F1</th>
+            </tr>""")
 
-for score in sorted(preds, key = lambda key: f[key]):
-    pretty_print(score, inters[score], preds[score], golds[score], pr[score], rc[score], f[score])
+for score in sorted(preds, key = lambda key: golds[key]):
+    pretty_print(score, inters[score], preds[score], golds[score])
 
-pr, rc, f = smatch.main(reentrancies_pred, reentrancies_gold, True)
-pretty_print('Reentrancies', '?', '?', '?', pr, rc, f)
+# pr, rc, f = smatch.main(reentrancies_pred, reentrancies_gold, True)
+# pretty_print('Reentrancies', '?', '?', '?', pr, rc, f)
 
-pr, rc, f = smatch.main(srl_pred, srl_gold, True)
-pretty_print('SRL', '?', '?', '?', pr, rc, f)
+# pr, rc, f = smatch.main(srl_pred, srl_gold, True)
+# pretty_print('SRL', '?', '?', '?', pr, rc, f)
 
-pr, rc, f = smatch.main(unlabelled_pred, unlabelled_gold, True)
-pretty_print('Unlabelled', '?', '?', '?', pr, rc, f)
+# pr, rc, f = smatch.main(unlabelled_pred, unlabelled_gold, True)
+# pretty_print('Unlabelled', '?', '?', '?', pr, rc, f)
+
+with open('out.html', 'a') as fout:
+    fout.write("""</table>
+        <table class="table">
+            <tr>
+                <th scope="col">Metric</th>
+                <th scope="col">Intersection</th>
+                <th scope="col">Pred</th>
+                <th scope="col">Gold</th>
+                <th scope="col">Precision</th>
+                <th scope="col">Recall</th>
+                <th scope="col">F1</th>
+            </tr>""")
+
+for score in sorted(concepts_inters, key = lambda key: -concepts_gold[key]):
+    pretty_print(score, concepts_inters[score], concepts_pred[score], concepts_gold[score])
+with open('out.html', 'a') as fout:
+    fout.write('</table></body></html>')

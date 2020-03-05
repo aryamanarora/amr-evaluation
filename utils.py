@@ -52,13 +52,19 @@ def evaluate2(v2c_dicts, tripleses, rels):
 
             # per-role
             if l in roles:
-                comps[i][l].append(c1 + ' ' + c2)
+                comps[i][':' + l].append(c1 + ' ' + c2)
             elif l[:-3] in roles and l.endswith('-of'):
-                comps[i][l].append(c2 + ' ' + c1)
+                comps[i][':' + l].append(c2 + ' ' + c1)
             
             # constants
             if v2.endswith('_'):
                 comps[i]['Constants'].append(l + ' ' + c1 + ' ' + c2)
+            
+            # mod+domain
+            if l == 'mod':
+                comps[i]['Mods+Domains'].append(c1 + ' ' + c2)
+            elif l == 'domain':
+                comps[i]['Mods+Domains'].append(c2 + ' ' + c1)
             
             # quantitites
             if c1.endswith('quantity'):
