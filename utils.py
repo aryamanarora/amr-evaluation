@@ -82,6 +82,13 @@ def evaluate2(v2c_dicts, tripleses, rels):
             if l.startswith('op'):
                 comps[i]['Ops (ignoring order)'].append(c1 + ' ' + c2)
             
+            # args
+            if l.startswith('ARG'):
+                if l.endswith('of'):
+                    comps[i]['ARGs (ignoring order)'].append(c2 + ' ' + c1)
+                else:
+                    comps[i]['ARGs (ignoring order)'].append(c1 + ' ' + c2)
+            
             # relations
             comps[i]['Relations (ignoring nodes)'].append(l)
             

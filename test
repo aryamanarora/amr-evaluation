@@ -1,11 +1,43 @@
-:opX
-different types of quantities
-counts of role types for each AMR
-individual verbs
-
-syntactic parser: Stanford NLP Universal Dependencies parser
-where the word lives syntax wise, does it affect pr/rc/f1
-reentrancies (consider different kinds, e.g. He wants to fly, pronouns, coordinations)
-multiple parsers, how it gets better or worse
-
-uniform meaning representation (UMR)
+root	2005	2343
+obj	2032	2369
+obl	1922	2248
+amod	2312	2627
+cc	1164	1262
+compound	2239	2495
+nmod	2125	2320
+nsubj	2961	3410
+conj	1549	1756
+mark	180	281
+advcl	752	915
+aux	398	454
+ccomp	372	444
+case	392	716
+advmod	1847	2165
+det	470	581
+csubj	73	81
+nmod:poss	426	546
+acl	332	381
+nsubj:pass	276	316
+iobj	25	31
+punct	355	712
+acl:relcl	345	423
+parataxis	159	199
+compound:prt	26	73
+xcomp	587	685
+nummod	80	111
+nmod:npmod	9	10
+appos	148	168
+obl:npmod	80	93
+fixed	33	45
+det:predet	51	55
+obl:tmod	85	111
+expl	7	15
+flat	359	370
+cc:preconj	2	5
+csubj:pass	1	1
+cop	4	6
+vocative	9	10
+aux:pass	2	6
+nmod:tmod	9	9
+list	17	22
+discourse	61	103

@@ -1,0 +1,18 @@
+:opX
+different types of quantities
+counts of role types for each AMR
+individual verbs
+
+syntactic parser: Stanford NLP Universal Dependencies parser
+where the word lives syntax wise, does it affect pr/rc/f1
+reentrancies (consider different kinds, e.g. He wants to fly, pronouns, coordinations)
+multiple parsers, how it gets better or worse
+
+uniform meaning representation (UMR)
+
+precision and recall for relations involving nodes which are aligned to a word that is nsubj etc.
+syntactic relations that reentrant nodes are aligned to
+are concepts more accurate for specific parts of speech?
+Thursday office hour
+
+TODO
