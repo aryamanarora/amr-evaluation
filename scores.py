@@ -201,7 +201,7 @@ def unaligned(pred, gold, output_file):
     with open(output_file, 'w') as fout:
         fout.write(output.render(roles=scores_roles, concepts=scores_concepts))
 
-def aligned(pred, gold, output_file, limit):
+def aligned(pred, gold, output_file, limit=-1):
     print(pred, gold)
     # input files
     pred = open(pred).read().strip().split('\n\n')
@@ -323,8 +323,7 @@ if __name__ == '__main__':
         aligned(
             'train_pred/unaligned/train_pred.txt',
             'train_pred/aligned/train.aligned.txt',
-            'out2.html',
-            100
+            'out2.html'
         )
     else:
         unaligned(sys.argv[1], sys.argv[2], 'out.html')
