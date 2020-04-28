@@ -7,6 +7,8 @@ An extension to [mdtux89/amr-evaluation](https://github.com/mdtux89/amr-evaluati
   * Performance for predictions over each part of speech and dependency relation defined by [Universal Dependencies](https://universaldependencies.org/).
 * Pretty HTML output using [Jinja](https://jinja.palletsprojects.com/en/2.11.x/) and [Bootstrap](https://getbootstrap.com/).
 
+![Screenshot of the output.](images/screenshot.png)
+
 ## Usage
 
 Ensure that you're using Python 3.
@@ -21,4 +23,4 @@ When no args are passed, the following files are used:
 * Gold: `train_pred/unaligned/train_gold.txt`
 * Gold with alignments: `train_pred/aligned/train.aligned.txt`
 
-The output is sent to `out.html` and `out2.html`, which can be opened in your favourite browser.
+The output is sent to `out.html` and `out2.html`, which can be opened in your favourite browser as well as copied into a spreadsheet.

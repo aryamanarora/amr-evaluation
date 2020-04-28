@@ -12,41 +12,53 @@
     </head>
     <body>
         <main class="mr-5 ml-5 mt-5">
-            <h1>POS</h1>
+            <h1>Roles</h1>
             <table class="table table-striped">
                 <tr>
                     <th scope="col">Metric</th>
-                    <th scope="col">Intersection</th>
-                    <th scope="col">Gold</th>
-                    <th scope="col">Recall</th>
+                    <th style="text-align:right" scope="col">Intersection</th>
+                    <th style="text-align:right" scope="col">Pred</th>
+                    <th style="text-align:right" scope="col">Gold</th>
+                    <th style="text-align:right" scope="col">Precision</th>
+                    <th style="text-align:right" scope="col">Recall</th>
+                    <th style="text-align:right" scope="col">F1</th>
                 </tr>
-                {% for metric in pos %}
+                {% for metric in roles %}
                 <tr>
                     <th scope="row">{{ metric.name }}{% if metric.note %}
                     <br>
                     <span class="small">{{ metric.note }}</span>
                     {% else %}
                     {% endif %}</th>
-                    <td>{{ metric.inter }}</td>
-                    <td>{{ metric.gold }}</td>
-                    <td>{{ "%.3f"|format(metric.rc) }}</td>
+                    <td style="text-align:right">{{ metric.inter }}</td>
+                    <td style="text-align:right">{{ metric.pred }}</td>
+                    <td style="text-align:right">{{ metric.gold }}</td>
+                    <td style="text-align:right">{{ "%.3f"|format(metric.pr) }}</td>
+                    <td style="text-align:right">{{ "%.3f"|format(metric.rc) }}</td>
+                    <td style="text-align:right">{{ "%.3f"|format(metric.f1) }}</td>
                 </tr>
                 {% endfor %}
             </table>
-            <h1>Dependencies</h1>
+            <h1>Concepts</h1>
             <table class="table table-striped">
                 <tr>
                     <th scope="col">Metric</th>
-                    <th scope="col">Intersection</th>
-                    <th scope="col">Gold</th>
-                    <th scope="col">Recall</th>
+                    <th style="text-align:right" scope="col">Intersection</th>
+                    <th style="text-align:right" scope="col">Pred</th>
+                    <th style="text-align:right" scope="col">Gold</th>
+                    <th style="text-align:right" scope="col">Precision</th>
+                    <th style="text-align:right" scope="col">Recall</th>
+                    <th style="text-align:right" scope="col">F1</th>
                 </tr>
-                {% for metric in deps %}
+                {% for metric in concepts %}
                 <tr>
                     <th scope="row">{{ metric.name }}</th>
-                    <td>{{ metric.inter }}</td>
-                    <td>{{ metric.gold }}</td>
-                    <td>{{ "%.3f"|format(metric.rc) }}</td>
+                    <td style="text-align:right">{{ metric.inter }}</td>
+                    <td style="text-align:right">{{ metric.pred }}</td>
+                    <td style="text-align:right">{{ metric.gold }}</td>
+                    <td style="text-align:right">{{ "%.3f"|format(metric.pr) }}</td>
+                    <td style="text-align:right">{{ "%.3f"|format(metric.rc) }}</td>
+                    <td style="text-align:right">{{ "%.3f"|format(metric.f1) }}</td>
                 </tr>
                 {% endfor %}
             </table>

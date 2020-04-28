@@ -22,6 +22,7 @@ file_loader = j2.FileSystemLoader('templates')
 env = j2.Environment(loader=file_loader)
 
 output = env.get_template('output.html.jinja')
+output2 = env.get_template('output2.html.jinja')
 
 nlp = stanza.Pipeline(lang='en', processors='tokenize,pos,lemma,depparse')
 
@@ -307,13 +308,13 @@ def aligned(pred, gold, output_file, limit):
         scores_deps.append(res)
     
     with open(output_file, 'w') as fout:
-        fout.write(output.render(pos=scores_pos, deps=scores_deps))
+        fout.write(output2.render(pos=scores_pos, deps=scores_deps))
 
 if __name__ == '__main__':
     if len(sys.argv) != 4 and len(sys.argv) != 1:
         print('Incorrect number of args, read the README.')
         exit(1)
-    if len(sys.argv) == 0:
+    if len(sys.argv) == 1:
         unaligned(
             'train_pred/unaligned/train_pred.txt',
             'train_pred/unaligned/train_gold.txt',
@@ -322,7 +323,8 @@ if __name__ == '__main__':
         aligned(
             'train_pred/unaligned/train_pred.txt',
             'train_pred/aligned/train.aligned.txt',
-            'out2.html'
+            'out2.html',
+            100
         )
     else:
         unaligned(sys.argv[1], sys.argv[2], 'out.html')
